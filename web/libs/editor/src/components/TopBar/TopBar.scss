@@ -1,0 +1,116 @@
+.topbar {
+  height: var(--topbar-height);
+  width: 100%;
+  z-index: 101;
+  flex: none;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  background-color: var(--color-neutral-background);
+  border-bottom: 1px solid var(--color-neutral-border);
+  user-select: none;
+  position: sticky;
+  top: 0;
+
+  &__button:not(.button_look_primary) {
+    &:hover {
+      background-color: var(--color-primary-emphasis-subtle);
+    }
+  }
+
+  &__back-button {
+    margin-right: 12px !important;
+    background-color: #4495ca !important;
+    color: #ffffff !important;
+    border: 1px solid #3a7ca8 !important;
+    padding: 8px 12px !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    min-width: auto !important;
+    
+    // Ensure flex layout for icon and text
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    
+    // Ensure text is visible
+    span {
+      color: #ffffff !important;
+      font-size: 13px !important;
+      line-height: 1 !important;
+      white-space: nowrap !important;
+    }
+    
+    // Icon styling
+    svg {
+      color: #ffffff !important;
+      fill: #ffffff !important;
+      width: 16px !important;
+      height: 16px !important;
+    }
+    
+    &:hover {
+      background-color: #3a7ca8 !important;
+      color: #ffffff !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+      
+      span {
+        color: #ffffff !important;
+      }
+      
+      svg {
+        color: #ffffff !important;
+        fill: #ffffff !important;
+      }
+    }
+    
+    &:active {
+      background-color: #2d5f7f !important;
+      transform: translateY(0) !important;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    &:focus {
+      outline: 2px solid #4495ca !important;
+      outline-offset: 2px !important;
+    }
+
+  }
+
+  &__group {
+    display: flex;
+    align-items: stretch;
+    gap: var(--spacing-tight);
+  }
+
+  &__section {
+    display: flex;
+    padding: 0 8px;
+    align-items: center;
+    box-sizing: border-box;
+
+    &_flat {
+      padding: 0;
+    }
+
+    & + & {
+      border-left: 1px solid var(--color-neutral-border);
+    }
+  }
+
+  &_newLabelingUI {
+    display: block;
+    background-color: var(--color-neutral-background);
+    height: 42px;
+    border-bottom: 1px solid var(--color-neutral-border);
+
+    & .topbar {
+      &__group {
+        height: 42px;
+        flex: 1;
+        align-items: center;
+      }
+    }
+  }
+}
