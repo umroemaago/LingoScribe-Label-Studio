@@ -111,3 +111,8 @@
     background: var(--color-neutral-surface);
   }
 }
+
+#waveform-layer-main {
+  height: 60px !important;
+  max-height: 64px !important;
+}
