@@ -135,7 +135,7 @@ RUN --mount=type=cache,target="/var/cache/apt",sharing=locked \
     set -eux; \
     apt-get update; \
     apt-get upgrade -y; \
-    apt-get install --no-install-recommends -y libexpat1 libgl1-mesa-glx libglib2.0-0 \
+    apt-get install --no-install-recommends -y libexpat1 libgl1 libglib2.0-0 \
         gnupg2 curl; \
     apt-get autoremove -y
 
@@ -164,6 +164,10 @@ COPY --chown=1001:0 README.md .
 COPY --chown=1001:0 LICENSE LICENSE
 COPY --chown=1001:0 licenses licenses
 COPY --chown=1001:0 deploy deploy
+
+# Fix for Windows: convert line endings and fix symlinks using Python script
+COPY --chown=1001:0 deploy/fix_permissions_and_links.py /label-studio/deploy/
+RUN python3 /label-studio/deploy/fix_permissions_and_links.py
 
 # Copy files from build stages
 COPY --chown=1001:0 --from=venv-builder               $LS_DIR                                           $LS_DIR

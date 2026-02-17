@@ -128,6 +128,10 @@ COPY --chown=1001:0 LICENSE LICENSE
 COPY --chown=1001:0 licenses licenses
 COPY --chown=1001:0 deploy deploy
 
+# Fix for Windows: convert line endings and fix symlinks using Python script
+COPY --chown=1001:0 deploy/fix_permissions_and_links.py /label-studio/deploy/
+RUN python3 /label-studio/deploy/fix_permissions_and_links.py
+
 # Copy files from build stages
 COPY --chown=1001:0 --from=venv-builder               $LS_DIR                                           $LS_DIR
 COPY --chown=1001:0 --from=py-version-generator       $LS_DIR/label_studio/core/version_.py             $LS_DIR/label_studio/core/version_.py

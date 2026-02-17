@@ -7,6 +7,7 @@
 !deploy/heroku_run.sh
 !deploy/uwsgi.ini
 !deploy/default.conf
+!deploy/fix_permissions_and_links.py
 !label_studio/**
 # Re-ignore pyc files and frontend
 label_studio/frontend
