@@ -67,7 +67,7 @@ export const CurrentTask = observer(({ store }) => {
           {store.task.id ?? guidGenerator()}
           {historyEnabled &&
             showCounter &&
-            (isFF(FF_TASK_COUNT_FIX) ? (
+            (isFF(FF_TASK_COUNT_FIX) || store.queueTotal > 0 ? (
               <Elem name="task-count">
                 {store.queuePosition} of {store.queueTotal}
               </Elem>

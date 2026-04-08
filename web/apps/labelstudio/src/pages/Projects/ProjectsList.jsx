@@ -61,11 +61,11 @@ const ProjectCard = ({ project }) => {
         : "var(--color-neutral-inverted-content)"; // Determine text color based on luminance
     return color
       ? {
-          "--header-color": color,
-          "--background-color": chr(color).alpha(0.2).css(),
-          "--text-color": textColor,
-          "--border-color": chr(color).alpha(0.5).css(),
-        }
+        "--header-color": color,
+        "--background-color": chr(color).alpha(0.2).css(),
+        "--text-color": textColor,
+        "--border-color": chr(color).alpha(0.5).css(),
+      }
       : {};
   }, [color]);
 
@@ -86,7 +86,7 @@ const ProjectCard = ({ project }) => {
               <Dropdown.Trigger
                 content={
                   <Menu contextual>
-                    {/* <Menu.Item href={`/projects/${project.id}/settings`}>Settings</Menu.Item> */}
+                    <Menu.Item href={`/projects/${project.id}/settings`}>Settings</Menu.Item>
                     <Menu.Item href={`/projects/${project.id}/data?labeling=1`}>Label</Menu.Item>
                   </Menu>
                 }

@@ -12,7 +12,7 @@ import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
 // import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
-import { when } from "mobx";
+import { reaction, when } from "mobx";
 
 const DEFAULT_INTERFACES = [
   "basic",
@@ -126,6 +126,8 @@ export class LSFWrapper {
     } else {
       interfaces.push(
         "infobar",
+        "topbar:prevnext",
+        "topbar:task-counter",
         "annotations:add-new",
         "annotations:view-all",
         "annotations:delete",
@@ -168,13 +170,28 @@ export class LSFWrapper {
       });
     }
 
-    const queueTotal = dm.store.project.reviewer_queue_total || dm.store.project.queue_total;
-    const queueDone = dm.store.project.queue_done;
-    const queueLeft = dm.store.project.queue_left;
-    const queuePosition = queueDone ? queueDone + 1 : queueLeft ? queueTotal - queueLeft + 1 : 1;
-    const commentClassificationConfig = dm.store.project.comment_classification_config;
+    const taskStore = dm.store.currentView?.taskStore;
+    const project = dm.store.project;
+    let queueTotal = project.reviewer_queue_total || project.queue_total;
+    let queuePosition = 1;
+
+    if (this.labelStream) {
+      const queueDone = project.queue_done;
+      const queueLeft = project.queue_left;
+
+      queuePosition = queueDone ? queueDone + 1 : queueLeft ? queueTotal - queueLeft + 1 : 1;
+    } else if (taskStore) {
+      queueTotal = taskStore.total;
+      const taskIndex = taskStore.list.findIndex((t) => t.id === task.id);
+      const { page = 1, pageSize = 1 } = taskStore;
+
+      queuePosition = taskIndex >= 0 ? (page - 1) * pageSize + taskIndex + 1 : 1;
+    }
+
+    const commentClassificationConfig = project.comment_classification_config;
 
     const lsfProperties = {
+      ...restOptions,
       user: options.user,
       config: this.lsfConfig,
       task: taskToLSFormat(this.task),
@@ -206,8 +223,6 @@ export class LSFWrapper {
       onSelectAnnotation: this.onSelectAnnotation,
       onNextTask: this.onNextTask,
       onPrevTask: this.onPrevTask,
-
-      ...restOptions,
     };
 
     this.initLabelStudio(lsfProperties);
@@ -345,7 +360,17 @@ export class LSFWrapper {
 
     const hasChangedTasks = this.lsf?.task?.id !== task?.id && task?.id;
 
-    this.setLoading(true, hasChangedTasks);
+    const taskStore = this.datamanager.store.currentView?.taskStore;
+    const queueTotal = taskStore?.total ?? (this.project.reviewer_queue_total || this.project.queue_total);
+    const taskIndex = taskStore?.list?.findIndex((t) => t.id === task.id) ?? -1;
+    const { page = 1, pageSize = 1 } = taskStore ?? {};
+    const queuePosition = taskIndex >= 0 ? (page - 1) * pageSize + taskIndex + 1 : 1;
+
+    this.lsf.setFlags({
+      isLoading: true,
+      queueTotal,
+      queuePosition,
+    });
     const lsfTask = taskToLSFormat(task);
     const isRejectedQueue = isDefined(task.default_selected_annotation);
     const taskList = this.datamanager.store.taskStore.list;
@@ -540,6 +565,34 @@ export class LSFWrapper {
     });
 
     this.lsf.setTaskHistory(_taskHistory);
+
+    if (!this.labelStream) {
+      reaction(
+        () => {
+          const taskStore = this.datamanager.store.currentView?.taskStore;
+
+          return {
+            total: taskStore?.total,
+            list: taskStore?.list?.map?.((t) => t.id),
+            taskId: this.task?.id,
+          };
+        },
+        ({ total, list, taskId }) => {
+          if (!this.lsf || this.labelStream) return;
+
+          const taskStore = this.datamanager.store.currentView?.taskStore;
+          const taskIndex = list?.findIndex((id) => id === taskId) ?? -1;
+          const { page = 1, pageSize = 1 } = taskStore ?? {};
+          const queuePosition = taskIndex >= 0 ? (page - 1) * pageSize + taskIndex + 1 : 1;
+          const queueTotal = total ?? (this.project.reviewer_queue_total || this.project.queue_total);
+
+          this.lsf.setFlags({
+            queueTotal,
+            queuePosition,
+          });
+        },
+      );
+    }
 
     await this.loadUserLabels();
 
@@ -875,14 +928,12 @@ export class LSFWrapper {
     this.datamanager.invoke("unskipTask");
   };
 
-  shouldLoadNext = () => {
-    if (!this.labelStream) return false;
-
+  shouldLoadNext() {
     // validating if URL is from notification, in case of notification it shouldn't load next task
     const urlParam = new URLSearchParams(location.search).get("interaction");
 
     return urlParam !== "notifications";
-  };
+  }
 
   shouldExitStream = () => {
     const paramName = "exitStream";
@@ -915,10 +966,50 @@ export class LSFWrapper {
 
   onNextTask = async (nextTaskId, nextAnnotationId) => {
     this.saveDraft();
+
+    if (!isDefined(nextTaskId) && !this.labelStream) {
+      const taskStore = this.datamanager.store.currentView?.taskStore;
+
+      if (taskStore) {
+        const taskIndex = taskStore.list.findIndex((t) => t.id === this.task?.id);
+
+        if (taskIndex >= 0 && taskIndex < taskStore.list.length - 1) {
+          const nextTask = taskStore.list[taskIndex + 1];
+
+          this.selectTask(nextTask);
+          return;
+        } else if (taskIndex >= 0 && taskStore.hasNextPage) {
+          await taskStore.fetch();
+          const nextTask = taskStore.list[taskIndex + 1];
+
+          if (nextTask) {
+            this.selectTask(nextTask);
+            return;
+          }
+        }
+      }
+    }
+
     this.loadTask(nextTaskId, nextAnnotationId, true);
   };
   onPrevTask = async (prevTaskId, prevAnnotationId) => {
     this.saveDraft();
+
+    if (!isDefined(prevTaskId) && !this.labelStream) {
+      const taskStore = this.datamanager.store.currentView?.taskStore;
+
+      if (taskStore) {
+        const taskIndex = taskStore.list.findIndex((t) => t.id === this.task?.id);
+
+        if (taskIndex > 0) {
+          const prevTask = taskStore.list[taskIndex - 1];
+
+          this.selectTask(prevTask);
+          return;
+        }
+      }
+    }
+
     this.loadTask(prevTaskId, prevAnnotationId, true);
   };
   async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true) {

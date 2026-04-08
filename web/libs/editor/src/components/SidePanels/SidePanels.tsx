@@ -47,7 +47,7 @@ interface PanelBBox {
   zIndex: number;
   visible: boolean;
   detached: boolean;
-  alignment: "left" ;
+  alignment: "left";
 }
 
 interface PanelView<T extends PanelProps = PanelProps> {
@@ -65,9 +65,9 @@ const restorePanel = (name: PanelType, defaults: PanelBBox) => {
 
   return panelData
     ? {
-        ...defaults,
-        ...JSON.parse(panelData),
-      }
+      ...defaults,
+      ...JSON.parse(panelData),
+    }
     : defaults;
 };
 
@@ -388,9 +388,9 @@ const SidePanelsComponent: FC<SidePanelsProps> = ({ currentEntity, panelsHidden,
 
       return !data.detached
         ? {
-            ...res,
-            [paddingProperty]: padding,
-          }
+          ...res,
+          [paddingProperty]: padding,
+        }
         : res;
     }, result);
   }, [panelsHidden, panelData, sidepanelsCollapsed]);
@@ -494,7 +494,7 @@ const SidePanelsComponent: FC<SidePanelsProps> = ({ currentEntity, panelsHidden,
         name="sidepanels"
         style={{
           ...padding,
-          
+
         }}
         mod={{ collapsed: sidepanelsCollapsed, newLabelingUI: isFF(FF_DEV_3873) }}
       >

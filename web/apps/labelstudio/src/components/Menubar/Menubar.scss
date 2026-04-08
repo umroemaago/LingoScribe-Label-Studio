@@ -29,6 +29,7 @@
   }
 
   &__context-item {
+
     &_left,
     &_right {
       height: 100%;
@@ -42,48 +43,48 @@
   }
 
   &__hotkeys {
-      display: flex;
-      padding: 0 var(--spacing-base);
-      align-items: center;
+    display: flex;
+    padding: 0 var(--spacing-base);
+    align-items: center;
   }
 
   &__hotkeys-button {
-      button {
-        svg {
-          width: 20px;
-          height: 20px;
-          color: var(--color-neutral-content-subtler);
-        }
+    button {
+      svg {
+        width: 20px;
+        height: 20px;
+        color: var(--color-neutral-content-subtler);
+      }
 
-        &:hover {
-          svg {
-            color: var(--color-neutral-icon);
-          }
+      &:hover {
+        svg {
+          color: var(--color-neutral-icon);
         }
       }
+    }
   }
 
-  
-&__trigger {
-  display: flex;
-  padding: 0 20px;
-  cursor: pointer;
-  align-items: center;
-  justify-content: space-between;
-  min-width: 240px;
-  max-width: 240px;
-  box-sizing: border-box;
-  border-right: 1px solid var(--color-neutral-border);
-  transition: all 150ms ease-out;
 
-  &:hover {
-    background-color: var(--color-neutral-emphasis-subtle);
-  }
+  &__trigger {
+    display: flex;
+    padding: 0 20px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: space-between;
+    min-width: var(--menu-sidebar-width);
+    max-width: var(--menu-sidebar-width);
+    box-sizing: border-box;
+    border-right: 1px solid var(--color-neutral-border);
+    transition: all 150ms ease-out;
 
-  @media (max-width: 767px) {
-    min-width: unset;
+    &:hover {
+      background-color: var(--color-neutral-emphasis-subtle);
+    }
+
+    @media (max-width: 767px) {
+      min-width: unset;
+    }
   }
-}
 
 
   &__logo {

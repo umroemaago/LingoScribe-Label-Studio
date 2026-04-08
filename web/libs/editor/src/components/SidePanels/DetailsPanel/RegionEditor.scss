@@ -78,8 +78,8 @@
     }
   }
 
-  &__input[type="checkbox"] + &__text,
-  &__input[type="radio"] + &__text {
+  &__input[type="checkbox"]+&__text,
+  &__input[type="radio"]+&__text {
     margin-left: 0;
     margin-right: 4px;
     position: static;

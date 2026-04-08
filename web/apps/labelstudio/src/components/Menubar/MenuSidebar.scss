@@ -50,12 +50,12 @@
       transform: translate3d(-100%, 0, 0);
     }
 
-    &.appear ~ .content-wrapper__content,
-    &.visible ~ .content-wrapper__content {
-      margin-left: 240px;
+    &.appear~.content-wrapper__content,
+    &.visible~.content-wrapper__content {
+      margin-left: var(--menu-sidebar-width);
     }
 
-    &.disappear ~ .content-wrapper__content {
+    &.disappear~.content-wrapper__content {
       margin-left: 0;
     }
   }

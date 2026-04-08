@@ -53,7 +53,7 @@ export const Tab = types
       .replace("px", "")
       .trim();
 
-    const labelingTableWidth = Number.parseInt(localStorage.getItem("labelingTableWidth") ?? defaultWidth ?? 200);
+    const labelingTableWidth = Number.parseInt(localStorage.getItem("labelingTableWidth") ?? defaultWidth ?? 180);
 
     return {
       labelingTableWidth,
@@ -119,17 +119,17 @@ export const Tab = types
     get currentOrder() {
       return self.ordering.length
         ? self.ordering.reduce((res, field) => {
-            const fieldName = field.replace(/^-/, "");
-            const desc = field[0] === "-";
+          const fieldName = field.replace(/^-/, "");
+          const desc = field[0] === "-";
 
-            return {
-              ...res,
-              [fieldName]: desc,
-              desc,
-              field: fieldName,
-              column: self.columns.find((c) => c.id === fieldName),
-            };
-          }, {})
+          return {
+            ...res,
+            [fieldName]: desc,
+            desc,
+            field: fieldName,
+            column: self.columns.find((c) => c.id === fieldName),
+          };
+        }, {})
         : null;
     },
 

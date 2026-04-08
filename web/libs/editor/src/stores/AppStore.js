@@ -215,14 +215,13 @@ export default types
       return Array.from(self.annotationStore.names.values()).some(isSegmentation);
     },
     get canGoNextTask() {
-      const hasHistory = self.task && self.taskHistory && self.taskHistory.length > 1;
+      const currentIndex = self.taskHistory.findIndex((x) => x.taskId === self.task.id);
 
-      if (hasHistory) {
-        const lastTaskId = self.taskHistory[self.taskHistory.length - 1].taskId;
-
-        return self.task.id !== lastTaskId;
+      if (currentIndex >= 0 && currentIndex < self.taskHistory.length - 1) {
+        return true;
       }
-      return false;
+
+      return self.queuePosition < self.queueTotal;
     },
     get canGoPrevTask() {
       const hasHistory = self.task && self.taskHistory && self.taskHistory.length > 1;
@@ -285,6 +284,8 @@ export default types
         "noAccess",
         "labeledSuccess",
         "awaitingSuggestions",
+        "queueTotal",
+        "queuePosition",
       ];
 
       for (const n of names) if (n in flags) self[n] = flags[n];
@@ -936,16 +937,17 @@ export default types
       // or annotation created from prediction
       await annotation.saveDraft({ was_postponed: true });
       await getEnv(self).events.invoke("nextTask");
-      self.incrementQueuePosition();
     }
 
     function nextTask() {
-      if (self.canGoNextTask) {
-        const { taskId, annotationId } =
-          self.taskHistory[self.taskHistory.findIndex((x) => x.taskId === self.task.id) + 1];
+      const currentIndex = self.taskHistory.findIndex((x) => x.taskId === self.task.id);
+
+      if (currentIndex >= 0 && currentIndex < self.taskHistory.length - 1) {
+        const { taskId, annotationId } = self.taskHistory[currentIndex + 1];
 
         getEnv(self).events.invoke("nextTask", taskId, annotationId);
-        self.incrementQueuePosition();
+      } else if (self.canGoNextTask) {
+        getEnv(self).events.invoke("nextTask");
       }
     }
 
@@ -955,10 +957,11 @@ export default types
         : self.taskHistory.findIndex((x) => x.taskId === self.task.id) - 1;
 
       if (self.canGoPrevTask || shouldGoBack) {
-        const { taskId, annotationId } = self.taskHistory[length];
+        if (length >= 0) {
+          const { taskId, annotationId } = self.taskHistory[length];
 
-        getEnv(self).events.invoke("prevTask", taskId, annotationId);
-        self.incrementQueuePosition(-1);
+          getEnv(self).events.invoke("prevTask", taskId, annotationId);
+        }
       }
     }
 

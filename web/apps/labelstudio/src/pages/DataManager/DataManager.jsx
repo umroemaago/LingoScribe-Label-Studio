@@ -26,7 +26,7 @@ const loadDependencies = () => [import("@humansignal/datamanager"), import("@hum
 const initializeDataManager = async (root, props, params) => {
   if (!window.LabelStudio) throw Error("Label Studio Frontend doesn't exist on the page");
   if (!root && root.dataset.dmInitialized) return;
-  
+
   root.dataset.dmInitialized = true;
 
   const { ...settings } = root.dataset;
@@ -104,9 +104,8 @@ export const DataManagerPage = ({ ...props }) => {
       const isMissingProjectError = error?.startsWith("Project ID:");
 
       if (isMissingTaskError || isMissingProjectError) {
-        const message = `The ${
-          isMissingTaskError ? "task" : "project"
-        } you are trying to access does not exist or is no longer available.`;
+        const message = `The ${isMissingTaskError ? "task" : "project"
+          } you are trying to access does not exist or is no longer available.`;
 
         toast.show({
           message,
@@ -237,9 +236,8 @@ DataManagerPage.context = ({ dmRef }) => {
   const { project } = useProject();
   const [mode, setMode] = useState(dmRef?.mode ?? "explorer");
 
-  const links = {
-    "/settings": "Settings",
-  };
+  const links = {};
+
 
   const updateCrumbs = (currentMode) => {
     const isExplorer = currentMode === "explorer";

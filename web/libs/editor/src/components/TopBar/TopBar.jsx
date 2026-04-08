@@ -23,42 +23,12 @@ export const TopBar = observer(({ store }) => {
   const isViewAll = annotationStore?.viewingAll === true;
   const isBulkMode = isFF(FF_BULK_ANNOTATION) && !isSelfServe() && store.hasInterface("annotation:bulk");
 
-  const handleBackClick = () => {
-    window.location.href = "./";
-  };
-
-  const backButtonStyle = {
-    marginRight: '12px',
-    backgroundColor: '#4495ca',
-    color: '#ffffff',
-    border: '1px solid #3a7ca8',
-    padding: '8px 12px',
-    borderRadius: '6px',
-    fontWeight: '500',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px'
-  };
-
   if (isFF(FF_DEV_3873) && isBulkMode) return null;
 
   return store ? (
     <Block name="topbar" mod={{ newLabelingUI: isFF(FF_DEV_3873) }}>
       {isFF(FF_DEV_3873) ? (
         <Elem name="group">
-          <Button
-            className={"topbar__back-button"}
-            aria-label="Go back"
-            onClick={handleBackClick}
-            variant="neutral"
-            look="string"
-            tooltip="Go back"
-            size="small"
-            style={backButtonStyle}
-          >
-            <IconChevronLeft />
-            <span>Back</span>
-          </Button>
           <CurrentTask store={store} />
           {store.hasInterface("annotations:view-all") && (
             <Button
@@ -103,24 +73,7 @@ export const TopBar = observer(({ store }) => {
         </Elem>
       ) : (
         <>
-
-          <Elem name="group" 
-           
-          >
-                 <Button
-              className={"topbar__back-button"}
-              aria-label="Go back"
-              onClick={handleBackClick}
-              variant="neutral"
-              look="string"
-              tooltip="Go back"
-              size="small"
-              style={backButtonStyle}
-            >
-              <IconChevronLeft />
-              <span>Back</span>
-            </Button>
-            
+          <Elem name="group">
             {!isBulkMode && <CurrentTask store={store} />}
             {!isViewAll && !isBulkMode && (
               <Annotations store={store} annotationStore={store.annotationStore} commentStore={store.commentStore} />

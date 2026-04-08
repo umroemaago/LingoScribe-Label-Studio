@@ -146,7 +146,7 @@ export const Menubar = ({ enabled, defaultOpened, defaultPinned, children, onSid
 
           <div className={menubarContext}>
             <LeftContextMenu className={contextItem.mod({ left: true })} />
-            {/* <RightContextMenu className={contextItem.mod({ right: true })} /> */}
+            <RightContextMenu className={contextItem.mod({ right: true })} />
           </div>
 
           <div className={menubarClass.elem("hotkeys")}>
@@ -181,18 +181,9 @@ export const Menubar = ({ enabled, defaultOpened, defaultPinned, children, onSid
             align="right"
             content={
               <Menu>
-               
-                {/* <Menu.Item label="Dark Mode"/> */}Create new project
+
                 <Menu.Item icon={<IconDoor />} label="Log Out" href={absoluteURL("/logout")} data-external />
-                {showNewsletterDot && (
-                  <>
-                    <Menu.Divider />
-                    <Menu.Item className={cn("newsletter-menu-item")} href={pages.AccountSettingsPage.path}>
-                      <span>Please check new notification settings in the Account & Settings page</span>
-                      <span className={cn("newsletter-menu-badge")} />
-                    </Menu.Item>
-                  </>
-                )}
+
               </Menu>
             }
           >
